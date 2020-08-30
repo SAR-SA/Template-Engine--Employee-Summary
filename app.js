@@ -77,6 +77,37 @@ const employeeQuestions = [
     },
 ]
 
+var teamRoster = [];
+
+function buildRoster() {
+    inquirer.prompt(employeeQuestions).then(employeeInfo => {
+        if (employeeQuestions.role == "engineer") {
+            var addMember = new Engineer(employeeInfo.name, teamRoster.length + 1, employeeInfo.email, employeeInfo.github);
+        } else {
+            var addMember = new Intern(employeeInfo.name, teamRoster.length + 1, employeeInfo.email, employeeInfo.school);
+        }
+        teamRoster.push(addMember);
+        if (employeeInfo.addAnother === "Yes") {
+            buildRoster();
+        } else {
+            renderHtml();
+        };
+    });
+};
+
+function renderHtml() {
+    let newPage = fs.readFileSync("./templates/main.html")
+    fs.writeFileSync(".Output/team.page.html", newfile, function (err) {
+        if (err) throw err;
+    })
+    console.log("HTML generated successfully");
+
+    for (member of teamRoster) {
+        
+    }
+
+}
+
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
