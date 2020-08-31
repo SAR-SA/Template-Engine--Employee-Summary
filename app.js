@@ -5,14 +5,15 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
-const OUTPUT_DIR = path.resolve(__dirname, "output");
-const outputPath = path.join(OUTPUT_DIR, "team.html");
+// const OUTPUT_DIR = path.resolve(__dirname, "output");
+// const outputPath = path.join(OUTPUT_DIR, "team.html");
 
-const render = require("./lib/htmlRenderer");
+// const render = require("./lib/htmlRenderer");
 
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+
 const managerQuestions = [
     {
         type: "input",
@@ -32,7 +33,7 @@ const managerQuestions = [
     {
         type: "list",
         name: "hasTeam",
-        message: "Does manager have team members",
+        message: "Does this manager have team members",
         choices: ["Yes", "No"]
     },
 ]
@@ -61,6 +62,12 @@ const employeeQuestions = [
         type: "input",
         name: "github",
         message: "Enter Engineer's github username:",
+        validate: async (input) => {
+            if (input == "" || /\s/.test(input)) {
+                return "Please enter a valid GitHub username";
+            }
+            return true;
+        }
     },
     {
         when: input => {
@@ -69,13 +76,19 @@ const employeeQuestions = [
         type: "input",
         name: "school",
         message: "Enter intern's school name:",
+        validate: async (input) => {
+            if (input == "") {
+                return "Please enter a name.";
+            }
+            return true;
+        }
     },
     {
         type: "list",
         name: "addAnother",
         message: "Add another team member?",
-        chocies: ["Yes", "No"]
-    },
+        choices: ["Yes", "No"]
+    }
 ]
 
 
@@ -100,7 +113,7 @@ function buildRoster() {
 
 function renderHtml() {
     let newPage = fs.readFileSync("./templates/main.html")
-    fs.writeFileSync(".Output/team.page.html", newPage, function (err) {
+    fs.writeFileSync("./output/teamPage.html", newPage, function (err) {
         if (err) throw err;
     })
     console.log("HTML generated successfully");
@@ -119,10 +132,10 @@ function renderHtml() {
 function memberCard(memberType, name, id, email, propertyValue) {
     let data = fs.readFileSync(`./templates/${memberType}.html`, 'utf8')
     data = data.replace("name", name);
-    data = dat.replace("id", `ID: ${id}`);
+    data = data.replace("id", `ID: ${id}`);
     data = data.replace("email", `Email: <ahref="mailto:${email}">${email}</a>`);
     data = data.replace("propertyHere", propertyValue);
-    fs.appendFileSync("./ouput/teampage.html", data, err => { if (err) throw err; })
+    fs.appendFileSync("./output/teamPage.html", data, err => { if (err) throw err; })
     console.log("Card appended");
 }
 
