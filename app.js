@@ -5,10 +5,10 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
-// const OUTPUT_DIR = path.resolve(__dirname, "output");
-// const outputPath = path.join(OUTPUT_DIR, "team.html");
+const OUTPUT_DIR = path.resolve(__dirname, "output");
+const outputPath = path.join(OUTPUT_DIR, "team.html");
 
-// const render = require("./lib/htmlRenderer");
+const render = require("./lib/htmlRenderer");
 
 
 // Write code to use inquirer to gather information about the development team members,
@@ -111,6 +111,7 @@ function buildRoster() {
     });
 };
 
+
 function renderHtml() {
     let newPage = fs.readFileSync("./templates/main.html")
     fs.writeFileSync("./output/teamPage.html", newPage, function (err) {
@@ -133,6 +134,7 @@ function memberCard(memberType, name, id, email, propertyValue) {
     let data = fs.readFileSync(`./templates/${memberType}.html`, 'utf8')
     data = data.replace("name", name);
     data = data.replace("id", `ID: ${id}`);
+    data = data.replace("role", memberType);
     data = data.replace("email", `Email: <ahref="mailto:${email}">${email}</a>`);
     data = data.replace("propertyHere", propertyValue);
     fs.appendFileSync("./output/teamPage.html", data, err => { if (err) throw err; })
@@ -147,7 +149,7 @@ function init() {
         if (managerInfo.hasTeam === "Yes") {
             buildRoster();
         } else {
-            buildHtmlPage();
+            renderHtml();
         }
     })
 }
