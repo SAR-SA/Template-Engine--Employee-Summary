@@ -13,7 +13,7 @@ const render = require("./lib/htmlRenderer");
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
-const mangerQuestions = [
+const managerQuestions = [
     {
         type: "input",
         name: "name",
@@ -49,7 +49,7 @@ const employeeQuestions = [
         message: "Enter employee's email:",
     },
     {
-        type: "input",
+        type: "list",
         name: "role",
         message: "Employee's role?",
         choices: ["engineer", "Intern"]
@@ -74,10 +74,13 @@ const employeeQuestions = [
         type: "list",
         name: "addAnother",
         message: "Add another team member?",
+        chocies: ["Yes", "No"]
     },
 ]
 
+
 var teamRoster = [];
+
 
 function buildRoster() {
     inquirer.prompt(employeeQuestions).then(employeeInfo => {
@@ -97,22 +100,54 @@ function buildRoster() {
 
 function renderHtml() {
     let newPage = fs.readFileSync("./templates/main.html")
-    fs.writeFileSync(".Output/team.page.html", newfile, function (err) {
+    fs.writeFileSync(".Output/team.page.html", newPage, function (err) {
         if (err) throw err;
     })
     console.log("HTML generated successfully");
 
     for (member of teamRoster) {
-        
+        if (member.getRole() == "Manager") {
+            memberCard("manager", member.getName(), member.getId(), member.getEmail(), "Office: " + member.getOfficeNumber());
+        } else if (member.getRole() == "Engineer") {
+            memberCard("manager", member.getName(), member.getId(), member.getEmail(), "Github: " + member.getGithub());
+        } else if (member.getRole() === "Intern") {
+            memberCard("manager", member.getName(), member.getId(), member.getEmail(), "School: " + member.getSchool());
+        }
     }
-
 }
+
+function memberCard(memberType, name, id, email, propertyValue) {
+    let data = fs.readFileSync(`./templates/${memberType}.html`, 'utf8')
+    data = data.replace("name", name);
+    data = dat.replace("id", `ID: ${id}`);
+    data = data.replace("email", `Email: <ahref="mailto:${email}">${email}</a>`);
+    data = data.replace("propertyHere", propertyValue);
+    fs.appendFileSync("./ouput/teampage.html", data, err => { if (err) throw err; })
+    console.log("Card appended");
+}
+
+function init() {
+    inquirer.prompt(managerQuestions).then(managerInfo => {
+        let teamManager = new Manager(managerInfo.name, 1, managerInfo.email, managerInfo.officeNum);
+        teamRoster.push(teamManager);
+        console.log(" ");
+        if (managerInfo.hasTeam === "Yes") {
+            buildRoster();
+        } else {
+            buildHtmlPage();
+        }
+    })
+}
+
+init();
+
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
-const arrayOfEmployees = [someIntern, someManager, someEngineer, someOtherEngineer];
-render(arrayOfEmployees);
+
+// const arrayOfEmployees = [someIntern, someManager, someEngineer, someOtherEngineer];
+// render(arrayOfEmployees);
 
 // After you have your html, you're now ready to create an HTML file using the HTML
 // returned from the `render` function. Now write it to a file named `team.html` in the
@@ -129,3 +164,5 @@ render(arrayOfEmployees);
 // for further information. Be sure to test out each class and verify it generates an
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work! ```
+
+
